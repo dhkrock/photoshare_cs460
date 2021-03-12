@@ -142,7 +142,7 @@ def register_user():
 		flask_login.login_user(user)
 		return render_template('hello.html', name=email, message='Account Created!')
 	else:
-		print("couldn't find all tokens")
+		print("A user is already registered with that e-mail")
 		return flask.redirect(flask.url_for('register'))
 
 def getUsersPhotos(uid):
