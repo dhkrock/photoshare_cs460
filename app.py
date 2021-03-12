@@ -10,7 +10,7 @@
 ###################################################
 
 import flask
-from flask import Flask, Response, request, render_template, redirect, url_for
+from flask import Flask, Response, request, render_template, redirect, url_for, flash
 from flaskext.mysql import MySQL
 import flask_login
 
@@ -142,7 +142,8 @@ def register_user():
 		flask_login.login_user(user)
 		return render_template('hello.html', name=email, message='Account Created!')
 	else:
-		print("A user is already registered with that e-mail")
+		print("registered already")
+		flash('A user is already registered with that e-mail')
 		return flask.redirect(flask.url_for('register'))
 
 def getUsersPhotos(uid):
