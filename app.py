@@ -121,7 +121,12 @@ def register():
 @app.route("/register", methods=['POST'])
 def register_user():
 	try:
+		first_name = request.form.get('first_name')
+		last_name = request.form.get('last_name')
 		email=request.form.get('email')
+		birth_date=request.form.get('birth_date')
+		hometown=request.form.get('hometown')
+		gender=request.form.get('gender')
 		password=request.form.get('password')
 	except:
 		print("couldn't find all tokens") #this prints to shell, end users will not see this (all print statements go to shell)
@@ -129,7 +134,7 @@ def register_user():
 	cursor = conn.cursor()
 	test =  isEmailUnique(email)
 	if test:
-		print(cursor.execute("INSERT INTO Users (email, password) VALUES ('{0}', '{1}')".format(email, password)))
+		print(cursor.execute("INSERT INTO Users (first_name, last_name, email, birth_date, hometown, gender, password) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}')".format(first_name, last_name, email, birth_date, hometown, gender, password)))
 		conn.commit()
 		#log user in
 		user = User()
