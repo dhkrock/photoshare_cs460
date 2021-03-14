@@ -1,0 +1,22 @@
+<head>
+    <title>Create an album!</title>
+</head>
+    <body>
+        {% with messages = get_flashed_messages() %}
+         {% if messages %}
+               {% for message in messages %}
+                   <p><h1 style = "font-size:3vw">{{ message }}</h1></p>
+               {% endfor %}
+         {% endif %}
+      {% endwith %}
+        <div id="content">
+            <form method="post" action="{{ url_for('create_album') }}">
+                <label for="album_name">Enter your album name:</label>
+                <input type="text" name="album_name" /><br />
+                <label for="doc">Enter the date of creation:</label>
+                <input type="date" name="doc" /><br />
+                <input type="submit" />
+            </form>
+         </div>
+    </body>
+<a href='/'>Home</a>

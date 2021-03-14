@@ -75,6 +75,7 @@ A new page looks like this:
 def new_page_function():
 	return new_page_html
 '''
+
 @app.route('/friends')
 def friends():
 	cursor = conn.cursor()
@@ -169,6 +170,18 @@ def isEmailUnique(email):
 		return False
 	else:
 		return True
+
+def albumExists(album, uid):
+	cursor = conn.cursor()
+	if cursor.execute("SELECT album_name, user_id FROM Albums WHERE album_name = '{0}' AND user_id = '{1}'".format(album, uid)):
+		return True
+	else:
+		return False
+
+def findAlbumID(album):
+	cursor = conn.cursor()
+	cursor.execute("SELECT albums_id FROM Albums WHERE album_name = '{0}'".format(album))
+	return cursor.fetchone()[0]
 #end login code
 
 @app.route('/profile')
@@ -182,6 +195,29 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
+@app.route('/create_album', methods = ['GET'])
+def create():
+	return render_template('create_album.html')
+
+@app.route('/create_album', methods = ['POST'])
+def create_album():
+	try:
+		album_name = request.form.get('album_name')
+		doc = request.form.get('doc')
+	except:
+		print("couldn't find all tokens") #this prints to shell, end users will not see this (all print statements go to shell)
+		return flask.redirect(flask.url_for('create_album'))
+	cursor = conn.cursor()
+	uid = getUserIdFromEmail(flask_login.current_user.id)
+	test = albumExists(album_name, uid)
+	if test:
+		flash("This album already exists!")
+		return flask.redirect(flask.url_for('create_album'))
+	else:
+		print(cursor.execute("INSERT INTO Albums(album_name, album_date, user_id) VALUES ('{0}', '{1}', '{2}')".format(album_name, doc, uid)))
+		conn.commit()
+	return render_template('hello.html', name=flask_login.current_user.id, message="Album created")
+
 @app.route('/upload', methods=['GET', 'POST'])
 @flask_login.login_required
 def upload_file():
@@ -189,11 +225,9 @@ def upload_file():
 		uid = getUserIdFromEmail(flask_login.current_user.id)
 		imgfile = request.files['photo']
 		caption = request.form.get('caption')
-		album_name = request.form.get('album')
 		photo_data =imgfile.read()
 		cursor = conn.cursor()
-		cursor.execute('''INSERT INTO Photos(imgdata, user_id, caption) VALUES (%s, %s, %s, %s )''' ,(photo_data,uid, caption))
-		cursor.execute('''INSERT INTO Albums()''')
+		cursor.execute('''INSERT INTO Photos(imgdata, user_id, caption) VALUES (%s, %s, %s)''',(photo_data,uid, caption))
 		cursor.execute('''UPDATE Users u, Photos p SET score = score + 1 WHERE p.user_id = u.user_id''')
 		conn.commit()
 		return render_template('hello.html', name=flask_login.current_user.id, message='Photo uploaded!', photos=getUsersPhotos(uid),base64=base64)

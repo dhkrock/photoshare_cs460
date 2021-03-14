@@ -26,8 +26,8 @@ CREATE TABLE Users(
 
 CREATE TABLE Albums(
  albums_id INTEGER AUTO_INCREMENT NOT NULL,
- name VARCHAR(100),
- date DATE,
+ album_name VARCHAR(100),
+ album_date DATE,
  user_id INTEGER NOT NULL,
  PRIMARY KEY (albums_id),
  FOREIGN KEY (user_id)
