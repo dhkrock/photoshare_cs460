@@ -75,13 +75,6 @@ A new page looks like this:
 def new_page_function():
 	return new_page_html
 '''
-
-@app.route('/friends')
-def friends():
-	cursor = conn.cursor()
-	#query to find user's friends
-	cursor.execute("SELECT first_name, last_name FROM Users u, Friends f WHERE f.user_id2 = u.user_id OR f.user_id1 = u.user_id")
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	if flask.request.method == 'GET':
@@ -182,6 +175,13 @@ def findAlbumID(album, uid):
 	cursor = conn.cursor()
 	cursor.execute("SELECT albums_id FROM Albums WHERE album_name = '{0}' AND user_id = '{1}'".format(album, uid))
 	return cursor.fetchone()[0]
+
+def friendExists(friend_email):
+	cursor = conn.cursor()
+	if cursor.execute("SELECT email FROM Users WHERE email = '{0}'".format(friend_email)):
+		return True
+	else:
+		False
 #end login code
 
 @app.route('/profile')
@@ -194,6 +194,20 @@ def protected():
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+@app.route('/friends', methods = ['GET'])
+def friend():
+	return render_template('friends.html')
+
+@app.route('/friends', methods = ['POST'])
+def friends():
+	uid = getUserIdFromEmail(flask_login.current_user.id)
+	friend_email = request.form.get('friend_email')
+	cursor = conn.cursor()
+	if friendExists(friend_email):
+		print(cursor.execute("INSERT INTO Friends(user_id1, user_id2) VALUES ('{0}', '{1}')".format(uid, getUserIdFromEmail(friend_email))))
+	#query to find user's friends
+	cursor.execute("SELECT first_name, last_name FROM Users u, Friends f WHERE f.user_id2 = u.user_id OR f.user_id1 = u.user_id")
 
 @app.route('/create_album', methods = ['GET'])
 def create():
