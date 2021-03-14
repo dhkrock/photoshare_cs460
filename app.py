@@ -75,6 +75,11 @@ A new page looks like this:
 def new_page_function():
 	return new_page_html
 '''
+@app.route('/friends')
+def friends():
+	cursor = conn.cursor()
+	#query to find user's friends
+	cursor.execute("SELECT first_name, last_name FROM Users u, Friends f WHERE f.user_id2 = u.user_id OR f.user_id1 = u.user_id")
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -143,7 +148,7 @@ def register_user():
 		return render_template('hello.html', name=email, message='Account Created!')
 	else:
 		print("registered already")
-		flash('A user is already registered with that e-mail')
+		flash('A user is already registered with that email')
 		return flask.redirect(flask.url_for('register'))
 
 def getUsersPhotos(uid):
@@ -184,9 +189,12 @@ def upload_file():
 		uid = getUserIdFromEmail(flask_login.current_user.id)
 		imgfile = request.files['photo']
 		caption = request.form.get('caption')
+		album_name = request.form.get('album')
 		photo_data =imgfile.read()
 		cursor = conn.cursor()
-		cursor.execute('''INSERT INTO Pictures (imgdata, user_id, caption) VALUES (%s, %s, %s )''' ,(photo_data,uid, caption))
+		cursor.execute('''INSERT INTO Photos(imgdata, user_id, caption) VALUES (%s, %s, %s, %s )''' ,(photo_data,uid, caption))
+		cursor.execute('''INSERT INTO Albums()''')
+		cursor.execute('''UPDATE Users u, Photos p SET score = score + 1 WHERE p.user_id = u.user_id''')
 		conn.commit()
 		return render_template('hello.html', name=flask_login.current_user.id, message='Photo uploaded!', photos=getUsersPhotos(uid),base64=base64)
 	#The method is GET so we return a  HTML form to upload the a photo.

@@ -1,6 +1,5 @@
-<!-- author ben lawson balawson@bu.edu -->
 <head>
-    <title>Create an account!</title>
+    <title>Your friends</title>
 </head>
 {%if not supress%}
 <h1> Email already in use! Use another one or <a href="/login">login</a></h1>
@@ -9,7 +8,7 @@
         {% with messages = get_flashed_messages() %}
          {% if messages %}
                {% for message in messages %}
-                   <p><h1 style = "font-size:3vw">{{ message }}</h1></p>
+                   <p><h1 style = "font-size:10vw">{{ message }}</h1></p>
                {% endfor %}
          {% endif %}
       {% endwith %}

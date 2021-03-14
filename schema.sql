@@ -9,6 +9,7 @@ CREATE TABLE Users(
  birth_date DATE,
  hometown VARCHAR(100),
  gender VARCHAR(100),
+ score INTEGER,
  password VARCHAR(100) NOT NULL,
  PRIMARY KEY (user_id)
  );
@@ -24,7 +25,7 @@ CREATE TABLE Users(
 );
 
 CREATE TABLE Albums(
- albums_id INTEGER,
+ albums_id INTEGER AUTO_INCREMENT NOT NULL,
  name VARCHAR(100),
  date DATE,
  user_id INTEGER NOT NULL,
@@ -40,9 +41,9 @@ CREATE TABLE Tags(
 );
 
 CREATE TABLE Photos(
- photo_id INTEGER,
+ photo_id INTEGER AUTO_INCREMENT NOT NULL,
  caption VARCHAR(100),
- data LONGBLOB,
+ imgdata LONGBLOB,
  albums_id INTEGER NOT NULL,
 user_id INTEGER NOT NULL,
  PRIMARY KEY (photo_id),
