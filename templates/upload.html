@@ -3,6 +3,13 @@
     <title>Upload a photo!</title>
 </head>
     <body>
+    {% with messages = get_flashed_messages() %}
+         {% if messages %}
+               {% for message in messages %}
+                   <p><h1 style = "font-size:3vw">{{ message }}</h1></p>
+               {% endfor %}
+         {% endif %}
+    {% endwith %}
         <div class="title">
             <h1>Upload a photo to Photoshare</h1>
         </div>

@@ -154,7 +154,7 @@ def register_user():
 
 def getUsersPhotos(uid):
 	cursor = conn.cursor()
-	cursor.execute("SELECT imgdata, picture_id, caption FROM Pictures WHERE user_id = '{0}'".format(uid))
+	cursor.execute("SELECT imgdata, photo_id, caption FROM Photos WHERE user_id = '{0}'".format(uid))
 	return cursor.fetchall() #NOTE list of tuples, [(imgdata, pid), ...]
 
 def getUserIdFromEmail(email):
@@ -178,9 +178,9 @@ def albumExists(album, uid):
 	else:
 		return False
 
-def findAlbumID(album):
+def findAlbumID(album, uid):
 	cursor = conn.cursor()
-	cursor.execute("SELECT albums_id FROM Albums WHERE album_name = '{0}'".format(album))
+	cursor.execute("SELECT albums_id FROM Albums WHERE album_name = '{0}' AND user_id = '{1}'".format(album, uid))
 	return cursor.fetchone()[0]
 #end login code
 
@@ -225,11 +225,18 @@ def upload_file():
 		uid = getUserIdFromEmail(flask_login.current_user.id)
 		imgfile = request.files['photo']
 		caption = request.form.get('caption')
+		album = request.form.get('album')
 		photo_data =imgfile.read()
 		cursor = conn.cursor()
-		cursor.execute('''INSERT INTO Photos(imgdata, user_id, caption) VALUES (%s, %s, %s)''',(photo_data,uid, caption))
-		cursor.execute('''UPDATE Users u, Photos p SET score = score + 1 WHERE p.user_id = u.user_id''')
-		conn.commit()
+		test = albumExists(album,uid)
+		if test:
+			aid = findAlbumID(album, uid)
+			cursor.execute('''INSERT INTO Photos(imgdata, user_id, caption, albums_id) VALUES (%s, %s, %s, %s)''', (photo_data, uid, caption, aid))
+			cursor.execute('''UPDATE Users u, Photos p SET score = score + 1 WHERE p.user_id = u.user_id''')
+			conn.commit()
+		else:
+			flash("That album does not exist! Try again with another album.")
+			return flask.redirect(flask.url_for('upload_file'))
 		return render_template('hello.html', name=flask_login.current_user.id, message='Photo uploaded!', photos=getUsersPhotos(uid),base64=base64)
 	#The method is GET so we return a  HTML form to upload the a photo.
 	else:
