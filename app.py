@@ -257,12 +257,17 @@ def upload_file():
 		return render_template('upload.html')
 #end photo uploading code
 
+@app.route('/view_photos', methods = ['GET', 'POST'])
+def view_photos():
+	cursor = conn.cursor()
+	photos_v = 	cursor.execute("SELECT imgdata, photo_id, caption FROM Photos")
+	photos_v = cursor.fetchall()
+	return render_template('view_photos.html', photos=photos_v, base64=base64)
 
 #default page
 @app.route("/", methods=['GET'])
 def hello():
 	return render_template('hello.html', message='Welecome to Photoshare')
-
 
 if __name__ == "__main__":
 	#this is invoked when in the shell  you run

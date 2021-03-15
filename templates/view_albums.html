@@ -1,5 +1,5 @@
 <head>
-    <title>Friends</title>
+    <title>Albums</title>
 </head>
     <body>
     {% with messages = get_flashed_messages() %}
@@ -10,7 +10,7 @@
          {% endif %}
     {% endwith %}
             <div class="title">
-            <h1>Friends</h1>
+            <h1>View albums by each user here!</h1>
         </div>
             <form method="post" enctype="multipart/form-data" action="/upload">
                 <label for="friend_email">Add a friend via email:</label>
