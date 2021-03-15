@@ -264,6 +264,21 @@ def view_photos():
 	photos_v = cursor.fetchall()
 	return render_template('view_photos.html', photos=photos_v, base64=base64)
 
+@app.route('/view_albums', methods = ['GET','POST'])
+def view_albums():
+	cursor = conn.cursor()
+	albums_v = cursor.execute("SELECT albums_id, album_name FROM Albums")
+	albums_v = cursor.fetchall()
+	return render_template('view_albums.html', albums=albums_v)
+
+@app.route('/view_albums_photos', methods = ['GET','POST'])
+def view_albums_photos():
+	aid = request.args.get('id')
+	cursor = conn.cursor()
+	albums_photos_v = cursor.execute("SELECT imgdata, photo_id, caption FROM Photos WHERE albums_id = '{0}'".format(aid))
+	albums_photos_v = cursor.fetchall()
+	return render_template('view_albums_photos.html', photos=albums_photos_v, base64=base64)
+
 #default page
 @app.route("/", methods=['GET'])
 def hello():

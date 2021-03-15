@@ -2,20 +2,15 @@
     <title>Albums</title>
 </head>
     <body>
-    {% with messages = get_flashed_messages() %}
-         {% if messages %}
-               {% for message in messages %}
-                   <p><h1 style = "font-size:3vw">{{ message }}</h1></p>
-               {% endfor %}
-         {% endif %}
-    {% endwith %}
-            <div class="title">
-            <h1>View albums by each user here!</h1>
+    <div class="title">
+            <h1>View the albums of all of the users here!</h1>
         </div>
-            <form method="post" enctype="multipart/form-data" action="/upload">
-                <label for="friend_email">Add a friend via email:</label>
-                <input type="submit" />
-            </form>
-    <h2>Friends list</h2>
+    {% if albums %}
+    <ul>
+    {% for album in albums %}
+        <li><a href="\view_albums_photos?id={{ album[0] }}">{{album[1]}}</a></li>
+    {% endfor %}
+    </ul>
+{% endif %}
     </body>
 <a href='/'>Home</a>

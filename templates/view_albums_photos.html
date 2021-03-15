@@ -1,0 +1,17 @@
+<head>
+    <title>Album's Photos</title>
+</head>
+    <body>
+    <div class="title">
+            <h1>Album's photos</h1>
+        </div>
+    {% if photos %}
+    <ul>
+    {% for photo in photos %}
+        <li>{{photo[2]}}<br>
+        <img src='data:image/jpg;base64, {{ base64.b64encode(photo[0]).decode("ascii") }}'/></li>
+    {% endfor %}
+    </ul>
+{% endif %}
+    </body>
+<a href='/view_albums'>View other albums</a>
