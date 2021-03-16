@@ -296,6 +296,7 @@ def delete_photos():
 	if pid:
 		cursor.execute("DELETE FROM Photos WHERE photo_id = '{0}'".format(pid))
 		flash("Photo deleted successfully!")
+		cursor.execute("UPDATE Users SET score = score - 1 WHERE user_id = '{0}'".format(uid))
 		conn.commit()
 	photos = cursor.execute("SELECT imgdata, photo_id, caption FROM Photos WHERE user_id = '{0}'".format(uid))
 	photos = cursor.fetchall()
@@ -307,70 +308,13 @@ def delete_album():
 	aid = request.args.get('id')
 	cursor = conn.cursor()
 	if aid:
+		cursor.execute("UPDATE Users SET score = score - (SELECT COUNT(*) FROM Photos WHERE albums_id = '{0}')  WHERE user_id = '{1}'".format(aid,uid))
 		cursor.execute("DELETE FROM Albums WHERE albums_id = '{0}'".format(aid))
 		flash("Album deleted successfully!")
 		conn.commit()
 	albums_v = cursor.execute("SELECT albums_id, album_name FROM Albums WHERE user_id = '{0}'".format(uid))
 	albums_v = cursor.fetchall()
 	return render_template('delete_album.html', albums=albums_v)
-
-@app.route('/comments/addComment/<photoID>', methods=['GET'])
-def comments(photoID):
-	try:
-		uid = getUserIdFromEmail(flask_login.current_user.id)
-		return render_template('comments.html', message="Leave a comment!", addComment="True", name=flask_login.current_user.id, photoID=photoID)
-	except:
-		return render_template('comments.html', message="Leave a comment!", addComment="True", photoID=photoID)
-
-@app.route('/comments/<commentPhotoId>', methods=['GET'])
-def viewComments(commentPhotoId):
-	try:
-		uid = getUserIdFromEmail(flask_login.current_user.id)
-		cursor = conn.cursor()
-		cursor.execute("SELECT comments_text, comments_owner_name, date_of_comments FROM Comments WHERE Photos_photos_id = '{0}'".format(commentPhotoId))
-		comments_list=cursor.fetchall()
-		return render_template('comments.html', name=flask_login.current_user.id, message="Here are the comments of this photo", comments= comments_list, photoID=commentPhotoId)
-	except:
-		cursor = conn.cursor()
-		cursor.execute("SELECT comments_text, comments_owner_name, date_of_comments FROM Comments WHERE Photos_photos_id = '{0}'".format(commentPhotoId))
-		comments_list=cursor.fetchall()
-		return render_template('comments.html', message="Here are the comments of this photo", comments= comments_list, photoID=commentPhotoId)
-
-
-
-@app.route('/leaveComments/<photoID>', methods=['POST'])
-def leaveComments(photoID):
-	comments_text=request.form.get('comment')
-	try:
-		uid = getUserIdFromEmail(flask_login.current_user.id)
-		comments_owner_name = findUserNameFromId(uid)
-	except:
-		uid = None
-		comments_owner_name = 'Other User'
-	date_of_comments= time.strftime("%Y-%m-%d")
-	photos_owner_id=findPhotoOwnerId(photoID)
-	if photos_owner_id==uid:
-		comments_list=search_comments(photoID)
-		return render_template ('comments.html', message='You can\'t leave a comment in your own photo', comments=comments_list, name=flask_login.current_user.id)
-	if uid == None:
-		cursor = conn.cursor()
-		cursor.execute("INSERT INTO Comments(comments_text, comments_owner_name, date_of_comments, Photos_photos_id) VALUES ('{0}', '{1}', '{2}', '{3}')".format(comments_text, comments_owner_name, date_of_comments, photoID))
-		conn.commit()
-	else:
-		cursor = conn.cursor()
-		cursor.execute("INSERT INTO Comments(comments_text, comments_owner_name, date_of_comments, Photos_photos_id, comment_owner_id) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}')".format(comments_text, comments_owner_name, date_of_comments, photoID, uid))
-		conn.commit()
-	comments_list=search_comments(photoID)
-	try:
-		uid = getUserIdFromEmail(flask_login.current_user.id)
-		return render_template('comments.html', message="Comment created!", name=flask_login.current_user.id, comments=comments_list)
-	except:
-		return render_template('comments.html', message="Comment created!", comments=comments_list)
-
-def search_comments(photos_id):
-	cursor = conn.cursor()
-	cursor.execute("SELECT comments_text, comments_owner_name, date_of_comments, comments_id FROM Comments WHERE Photos_photos_id = '{0}'".format(photos_id))
-	return cursor.fetchall()
 
 #default page
 @app.route("/", methods=['GET'])
