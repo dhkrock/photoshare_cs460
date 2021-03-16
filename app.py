@@ -155,11 +155,6 @@ def getUserIdFromEmail(email):
 	cursor.execute("SELECT user_id  FROM Users WHERE email = '{0}'".format(email))
 	return cursor.fetchone()[0]
 
-def getUserEmailFromId(uid):
-	cursor = conn.cursor()
-	cursor.execute("SELECT email  FROM Users WHERE  = user_id = '{0}'".format(uid))
-	return cursor.fetchone()[0]
-
 def isEmailUnique(email):
 	#use this to check if a email has already been registered
 	cursor = conn.cursor()
