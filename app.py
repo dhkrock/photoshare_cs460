@@ -309,6 +309,40 @@ def delete_album():
 	albums_v = cursor.fetchall()
 	return render_template('delete_album.html', albums=albums_v)
 
+posting comments
+@app.route('/comment', methods=['GET', 'POST'])
+@flask_login.current_user.is_authenticated
+def comment():
+    selfid = getUserIdFromEmail(flask_login.current_user.id)
+    if selfid != True:
+         comment_id = request.form['comment_id']
+         comment_text = request.form['comment_text']
+         cursor.execute('''INSERT INTO Comment (user.id, User, comment_text) VALUES(%s, %s, %s)'''(comment_id,comment_text))
+
+    else:
+        flash("Users cannot comment on their own pictures")
+        return flask.redirect(flask.url_for('comment'))
+    return render_template('comment.html')
+
+@app.route('/comment', methods=['GET', 'POST'])
+@flask_login.current_user.is_authenticated
+def anon_comment():
+    if unauthorized_handler():
+         comment_id = request.form['comment_id']
+         comment_text = request.form['comment_text']
+         cursor.execute('''INSERT INTO Comment (user.id, User, comment_text) VALUES(%s, %s, %s)'''(comment_id,comment_text))
+         flash("Anonymous Comment Posted")
+         cursor.execute('''INSERT INTO Comment (user.id, User, comment_text) VALUES(%s, %s, %s)'''(comment_id,comment_text))
+
+@app.route('/comment', methods=['GET', 'POST'])
+@flask_login.current_user.is_authenticated
+def search_comments():
+    cursor = conn.cursor()
+    comm_find = cursor.execute("SELECT comment_id, comment_text FROM Comments")
+    comm_fid = cursor.fetchall()
+    return render_template('view_albums.html', comments=comm_find)
+
+
 #default page
 @app.route("/", methods=['GET'])
 def hello():
