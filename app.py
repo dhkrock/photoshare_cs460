@@ -324,7 +324,7 @@ def comment():
         return flask.redirect(flask.url_for('comment'))
     return render_template('comment.html')
 
-@app.route('/comment', methods=['GET', 'POST'])
+@app.route('/anon_comment', methods=['GET', 'POST'])
 @flask_login.current_user.is_authenticated
 def anon_comment():
     if unauthorized_handler():
@@ -334,7 +334,7 @@ def anon_comment():
          flash("Anonymous Comment Posted")
          cursor.execute('''INSERT INTO Comment (user.id, User, comment_text) VALUES(%s, %s, %s)'''(comment_id,comment_text))
 
-@app.route('/comment', methods=['GET', 'POST'])
+@app.route('/searc_comments', methods=['GET', 'POST'])
 @flask_login.current_user.is_authenticated
 def search_comments():
     cursor = conn.cursor()
