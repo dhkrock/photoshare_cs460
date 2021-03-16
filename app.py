@@ -334,13 +334,6 @@ def anon_comment():
          flash("Anonymous Comment Posted")
          cursor.execute('''INSERT INTO Comment (user.id, User, comment_text) VALUES(%s, %s, %s)'''(comment_id,comment_text))
 
-@app.route('/searc_comments', methods=['GET', 'POST'])
-@flask_login.current_user.is_authenticated
-def search_comments():
-    cursor = conn.cursor()
-    comm_find = cursor.execute("SELECT comment_id, comment_text FROM Comments")
-    comm_fid = cursor.fetchall()
-    return render_template('view_albums.html', comments=comm_find)
 
 
 #default page
