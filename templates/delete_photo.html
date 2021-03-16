@@ -1,0 +1,23 @@
+<head>
+    <title>Delete photos</title>
+</head>
+    <body>
+    {% with messages = get_flashed_messages() %}
+         {% if messages %}
+               {% for message in messages %}
+                   <p><h1 style = "font-size:3vw">{{ message }}</h1></p>
+               {% endfor %}
+         {% endif %}
+    {% endwith %}
+    <div class="title">
+            <h1>Click on a photo to delete it!</h1>
+        </div>
+    {% if photos %}
+    <ul>
+    {% for photo in photos %}
+        <li><a href="\delete_photo?id={{ photo[1] }}"><img src='data:image/jpg;base64, {{ base64.b64encode(photo[0]).decode("ascii") }}'/></a></li>
+    {% endfor %}
+    </ul>
+{% endif %}
+    </body>
+<a href='/'>Home</a>

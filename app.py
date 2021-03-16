@@ -279,6 +279,32 @@ def view_albums_photos():
 	albums_photos_v = cursor.fetchall()
 	return render_template('view_albums_photos.html', photos=albums_photos_v, base64=base64)
 
+@app.route('/delete_photo', methods = ['GET', 'POST'])
+def delete_photos():
+	uid = getUserIdFromEmail(flask_login.current_user.id)
+	pid = request.values.get("id")
+	cursor = conn.cursor()
+	if pid:
+		cursor.execute("DELETE FROM Photos WHERE photo_id = '{0}'".format(pid))
+		flash("Photo deleted successfully!")
+		conn.commit()
+	photos = cursor.execute("SELECT imgdata, photo_id, caption FROM Photos WHERE user_id = '{0}'".format(uid))
+	photos = cursor.fetchall()
+	return render_template('delete_photo.html', message="Photo deleted!", photos=photos, base64=base64)
+
+@app.route('/delete_album', methods = ['GET', 'POST'])
+def delete_album():
+	uid = getUserIdFromEmail(flask_login.current_user.id)
+	aid = request.args.get('id')
+	cursor = conn.cursor()
+	if aid:
+		cursor.execute("DELETE FROM Albums WHERE albums_id = '{0}'".format(aid))
+		flash("Album deleted successfully!")
+		conn.commit()
+	albums_v = cursor.execute("SELECT albums_id, album_name FROM Albums WHERE user_id = '{0}'".format(uid))
+	albums_v = cursor.fetchall()
+	return render_template('delete_album.html', albums=albums_v)
+
 #default page
 @app.route("/", methods=['GET'])
 def hello():
