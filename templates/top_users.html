@@ -1,0 +1,16 @@
+<head>
+    <title>Top Users</title>
+</head>
+    <body>
+    <div class="title">
+            <h1>Top 10 users of Photoshare!</h1>
+        </div>
+    {% if users %}
+    <ul>
+    {% for user in users %}
+        <li>{{user[0]}} {{user[1]}}: {{user[2]}} | SCORE: {{user[3]}}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
+    </body>
+<a href='/'>Home</a>

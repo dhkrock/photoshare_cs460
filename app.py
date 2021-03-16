@@ -211,7 +211,17 @@ def friends():
 	#query to find user's friends
 	friends = cursor.execute("SELECT first_name, last_name, email FROM Users u INNER JOIN Friends f On user_id2 = user_id WHERE user_id1 ='{0}'".format(uid))
 	friends = cursor.fetchall()
-	return render_template('friends.html', friends=friends)
+	friend_recs = cursor.execute("SELECT first_name, last_name, email, COUNT(*) FROM Friends f1 INNER JOIN Users u ON f1.user_id2 = user_id WHERE f1.user_id1 IN (SELECT user_id2 FROM Friends f WHERE f.user_id1='{0}') AND f1.user_id2 NOT IN (SELECT user_id2 FROM Friends f WHERE f.user_id1 = '{0}') AND f1.user_id2 <> '{0}' GROUP BY email ORDER BY COUNT(*) DESC".format(uid))
+	friend_recs = cursor.fetchall()
+	print(friend_recs)
+	return render_template('friends.html', friends=friends, friend_recs = friend_recs)
+
+@app.route('/top_users', methods = ['GET', 'POST'])
+def top_users():
+	cursor = conn.cursor()
+	users = cursor.execute("SELECT first_name, last_name, email, score FROM users ORDER BY score DESC LIMIT 10")
+	users = cursor.fetchall()
+	return render_template('top_users.html', users = users)
 
 @app.route('/create_album', methods = ['GET'])
 def create():
@@ -250,7 +260,7 @@ def upload_file():
 		if test:
 			aid = findAlbumID(album, uid)
 			cursor.execute('''INSERT INTO Photos(imgdata, user_id, caption, albums_id) VALUES (%s, %s, %s, %s)''', (photo_data, uid, caption, aid))
-			cursor.execute('''UPDATE Users u, Photos p SET score = score + 1 WHERE p.user_id = u.user_id''')
+			cursor.execute("UPDATE Users SET score = score + 1 WHERE user_id = '{0}'".format(uid))
 			conn.commit()
 		else:
 			flash("That album does not exist! Try again with another album.")
@@ -309,32 +319,63 @@ def delete_album():
 	albums_v = cursor.fetchall()
 	return render_template('delete_album.html', albums=albums_v)
 
-posting comments
-@app.route('/comment', methods=['GET', 'POST'])
-@flask_login.current_user.is_authenticated
-def comment():
-    selfid = getUserIdFromEmail(flask_login.current_user.id)
-    if selfid != True:
-         comment_id = request.form['comment_id']
-         comment_text = request.form['comment_text']
-         cursor.execute('''INSERT INTO Comment (user.id, User, comment_text) VALUES(%s, %s, %s)'''(comment_id,comment_text))
+@app.route('/comments/addComment/<photoID>', methods=['GET'])
+def comments(photoID):
+	try:
+		uid = getUserIdFromEmail(flask_login.current_user.id)
+		return render_template('comments.html', message="Leave a comment!", addComment="True", name=flask_login.current_user.id, photoID=photoID)
+	except:
+		return render_template('comments.html', message="Leave a comment!", addComment="True", photoID=photoID)
 
-    else:
-        flash("Users cannot comment on their own pictures")
-        return flask.redirect(flask.url_for('comment'))
-    return render_template('comment.html')
-
-@app.route('/anon_comment', methods=['GET', 'POST'])
-@flask_login.current_user.is_authenticated
-def anon_comment():
-    if unauthorized_handler():
-         comment_id = request.form['comment_id']
-         comment_text = request.form['comment_text']
-         cursor.execute('''INSERT INTO Comment (user.id, User, comment_text) VALUES(%s, %s, %s)'''(comment_id,comment_text))
-         flash("Anonymous Comment Posted")
-         cursor.execute('''INSERT INTO Comment (user.id, User, comment_text) VALUES(%s, %s, %s)'''(comment_id,comment_text))
+@app.route('/comments/<commentPhotoId>', methods=['GET'])
+def viewComments(commentPhotoId):
+	try:
+		uid = getUserIdFromEmail(flask_login.current_user.id)
+		cursor = conn.cursor()
+		cursor.execute("SELECT comments_text, comments_owner_name, date_of_comments FROM Comments WHERE Photos_photos_id = '{0}'".format(commentPhotoId))
+		comments_list=cursor.fetchall()
+		return render_template('comments.html', name=flask_login.current_user.id, message="Here are the comments of this photo", comments= comments_list, photoID=commentPhotoId)
+	except:
+		cursor = conn.cursor()
+		cursor.execute("SELECT comments_text, comments_owner_name, date_of_comments FROM Comments WHERE Photos_photos_id = '{0}'".format(commentPhotoId))
+		comments_list=cursor.fetchall()
+		return render_template('comments.html', message="Here are the comments of this photo", comments= comments_list, photoID=commentPhotoId)
 
 
+
+@app.route('/leaveComments/<photoID>', methods=['POST'])
+def leaveComments(photoID):
+	comments_text=request.form.get('comment')
+	try:
+		uid = getUserIdFromEmail(flask_login.current_user.id)
+		comments_owner_name = findUserNameFromId(uid)
+	except:
+		uid = None
+		comments_owner_name = 'Other User'
+	date_of_comments= time.strftime("%Y-%m-%d")
+	photos_owner_id=findPhotoOwnerId(photoID)
+	if photos_owner_id==uid:
+		comments_list=search_comments(photoID)
+		return render_template ('comments.html', message='You can\'t leave a comment in your own photo', comments=comments_list, name=flask_login.current_user.id)
+	if uid == None:
+		cursor = conn.cursor()
+		cursor.execute("INSERT INTO Comments(comments_text, comments_owner_name, date_of_comments, Photos_photos_id) VALUES ('{0}', '{1}', '{2}', '{3}')".format(comments_text, comments_owner_name, date_of_comments, photoID))
+		conn.commit()
+	else:
+		cursor = conn.cursor()
+		cursor.execute("INSERT INTO Comments(comments_text, comments_owner_name, date_of_comments, Photos_photos_id, comment_owner_id) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}')".format(comments_text, comments_owner_name, date_of_comments, photoID, uid))
+		conn.commit()
+	comments_list=search_comments(photoID)
+	try:
+		uid = getUserIdFromEmail(flask_login.current_user.id)
+		return render_template('comments.html', message="Comment created!", name=flask_login.current_user.id, comments=comments_list)
+	except:
+		return render_template('comments.html', message="Comment created!", comments=comments_list)
+
+def search_comments(photos_id):
+	cursor = conn.cursor()
+	cursor.execute("SELECT comments_text, comments_owner_name, date_of_comments, comments_id FROM Comments WHERE Photos_photos_id = '{0}'".format(photos_id))
+	return cursor.fetchall()
 
 #default page
 @app.route("/", methods=['GET'])

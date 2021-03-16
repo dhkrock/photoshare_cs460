@@ -23,6 +23,14 @@
         <li>{{friend[0]}} {{friend[1]}}: {{friend[2]}}</li>
     {% endfor %}
     </ul>
-{% endif %}
+    {% endif %}
+    <h2>Friend recommendations</h2>
+    <ul>
+    {% if friend_recs %}
+    {% for possible in friend_recs %}
+        <li>{{ possible[0] }} {{possible[1]}}: {{possible[2]}}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
     </body>
 <a href='/'>Home</a>
