@@ -155,6 +155,11 @@ def getUserIdFromEmail(email):
 	cursor.execute("SELECT user_id  FROM Users WHERE email = '{0}'".format(email))
 	return cursor.fetchone()[0]
 
+def getUserEmailFromId(uid):
+	cursor = conn.cursor()
+	cursor.execute("SELECT email  FROM Users WHERE  = user_id = '{0}'".format(uid))
+	return cursor.fetchone()[0]
+
 def isEmailUnique(email):
 	#use this to check if a email has already been registered
 	cursor = conn.cursor()
@@ -195,19 +200,18 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-@app.route('/friends', methods = ['GET'])
-def friend():
-	return render_template('friends.html')
-
-@app.route('/friends', methods = ['POST'])
+@app.route('/friends', methods = ['GET','POST'])
 def friends():
 	uid = getUserIdFromEmail(flask_login.current_user.id)
 	friend_email = request.form.get('friend_email')
 	cursor = conn.cursor()
 	if friendExists(friend_email):
 		print(cursor.execute("INSERT INTO Friends(user_id1, user_id2) VALUES ('{0}', '{1}')".format(uid, getUserIdFromEmail(friend_email))))
+		conn.commit()
 	#query to find user's friends
-	cursor.execute("SELECT first_name, last_name FROM Users u, Friends f WHERE f.user_id2 = u.user_id OR f.user_id1 = u.user_id")
+	friends = cursor.execute("SELECT first_name, last_name, email FROM Users u INNER JOIN Friends f On user_id2 = user_id WHERE user_id1 ='{0}'".format(uid))
+	friends = cursor.fetchall()
+	return render_template('friends.html', friends=friends)
 
 @app.route('/create_album', methods = ['GET'])
 def create():

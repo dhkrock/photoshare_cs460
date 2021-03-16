@@ -1,5 +1,5 @@
 <head>
-    <title>Friends</title>
+    <title>Manage Friends</title>
 </head>
     <body>
     {% with messages = get_flashed_messages() %}
@@ -10,12 +10,19 @@
          {% endif %}
     {% endwith %}
             <div class="title">
-            <h1>Friends</h1>
+            <h1>Manage friends</h1>
         </div>
-            <form method="post" enctype="multipart/form-data" action="/upload">
+            <form method="post" enctype="multipart/form-data" action="/friends">
                 <label for="friend_email">Add a friend via email:</label>
-                <input type="submit" />
+                <input type ="email" name = "friend_email"/><input type="submit" value = "Add"/><br />
             </form>
     <h2>Friends list</h2>
+    {% if friends %}
+    <ul>
+    {% for friend in friends %}
+        <li>{{friend[0]}} {{friend[1]}}: {{friend[2]}}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
     </body>
 <a href='/'>Home</a>
