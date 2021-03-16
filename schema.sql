@@ -9,7 +9,7 @@ CREATE TABLE Users(
  birth_date DATE,
  hometown VARCHAR(100),
  gender VARCHAR(100),
- score INTEGER,
+ score INTEGER NOT NULL DEFAULT 0,
  password VARCHAR(100) NOT NULL,
  PRIMARY KEY (user_id)
  );
