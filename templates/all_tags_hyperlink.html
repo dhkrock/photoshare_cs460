@@ -1,0 +1,16 @@
+<head>
+    <title>All tags hyperlink</title>
+</head>
+    <body>
+    <div class="title">
+            <h1>Access all photos via tags!</h1>
+        </div>
+    {% if tags %}
+    <ul>
+    {% for tag in tags %}
+        <li><a href="\view_tags_all?id={{ tag[0] }}">{{tag[1]}}</a></li>
+    {% endfor %}
+    </ul>
+{% endif %}
+    </body>
+<a href='/'>Home</a>

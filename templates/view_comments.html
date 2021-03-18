@@ -1,7 +1,14 @@
 <head>
-    <title>Photos</title>
+    <title>View comments</title>
 </head>
     <body>
+    {% with messages = get_flashed_messages() %}
+         {% if messages %}
+               {% for message in messages %}
+                   <p><h1 style = "font-size:3vw">{{ message }}</h1></p>
+               {% endfor %}
+         {% endif %}
+    {% endwith %}
     <div class="title">
             <h1>Photo's comments</h1>
         </div>
@@ -10,19 +17,49 @@
     {% for photo in photos %}
         <li>{{photo[2]}}<br>
         <img src='data:image/jpg;base64, {{ base64.b64encode(photo[0]).decode("ascii") }}'/></li>
+            <form method="post" enctype="multipart/form-data" action="/view_comments?id={{ photo[1] }}">
+                <input type ="hidden" id = "like" name = "like" value = "yes"/>
+                <input type="submit" value = "Like"/><br />
+            </form>
+    <li><a href='/add_comment?id={{ photo[1]}}'> Add a comment</a></li>
     {% endfor %}
     </ul>
+    {% endif %}
+    {% if likes_count %}
+        <u1>
+        {% for count in likes_count %}
+        <li>
+            Likes: {{ count[0] }}
+        </li>
+        {% endfor %}
+        </u1>
+        <br>
+    {% endif %}
+    {% if likes_email %}
+        <u1>
+        Users who liked this picture:
+        {% for email in likes_email %}
+        <li>
+            {{ email[0] }}
+        </li>
+        {% endfor %}
+        </u1>
+        <br>
+    {% endif %}
     {%  if comments %}
     <u1>
+    Comments:
     {% for comment in comments %}
     <li>
-        Commenter: {{ comment }}
+        {% if comment[1] == None %}
+    Anonymous | Comment: {{ comment[2] }} | Date: {{ comment[3] }}
+
+        {% else %}
+               {{ comment[1] }}: {{ comment[2] }} | Date: {{ comment[3] }}
+        {% endif %}
     </li>
+    {% endfor %}
     </u1>
-        <form method="post" enctype="multipart/form-data" action="/friends">
-            <label for="friend_email">Add a friend via email:</label>
-            <input type ="email" name = "friend_email"/><input type="submit" value = "Add"/><br />
-        </form>
-{% endif %}
+    {% endif %}
     </body>
 <a href='/'>Home</a>

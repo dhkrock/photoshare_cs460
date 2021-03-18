@@ -1,0 +1,17 @@
+<head>
+    <title>Add a comment</title>
+</head>
+    <body>
+    {% with messages = get_flashed_messages() %}
+         {% if messages %}
+               {% for message in messages %}
+                   <p><h1 style = "font-size:3vw">{{ message }}</h1></p>
+               {% endfor %}
+         {% endif %}
+    {% endwith %}
+    <form method="post" enctype="multipart/form-data" action="/add_comment">
+        <label for="comment">Add a comment:</label>
+        <input type ="text" name = "comment"/><input type="submit" value = "Submit"/><br />
+    </form>
+    </body>
+<a href='/view_photos'>View photos</a>

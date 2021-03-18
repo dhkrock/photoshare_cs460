@@ -1,0 +1,16 @@
+<head>
+    <title>Top Users</title>
+</head>
+    <body>
+    <div class="title">
+            <h1>Top tags of Photoshare!</h1>
+        </div>
+    {% if tags %}
+    <ul>
+    {% for tag in tags %}
+       <li><a href="\popular_tagview?id={{ tag[1] }}">{{tag[0]}}</a></li>
+    {% endfor %}
+    </ul>
+{% endif %}
+    </body>
+<a href='/'>Home</a>

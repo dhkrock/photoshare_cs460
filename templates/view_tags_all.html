@@ -1,8 +1,10 @@
 <head>
-    <title>Recommendations</title>
+    <title>Tag's photos</title>
 </head>
-<body>
- <h2>You may also like these photos by other users</h2>
+    <body>
+    <div class="title">
+            <h1>Tag's photos</h1>
+        </div>
     {% if photos %}
     <ul>
     {% for photo in photos %}
@@ -11,5 +13,5 @@
     {% endfor %}
     </ul>
 {% endif %}
-</body>
-</html>
+    </body>
+<li><a href='/'>Home</a></li>

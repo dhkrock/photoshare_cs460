@@ -1,0 +1,16 @@
+<head>
+    <title>Your tags hyperlink</title>
+</head>
+    <body>
+    <div class="title">
+            <h1>Access your photos via tags!</h1>
+        </div>
+    {% if tags %}
+    <ul>
+    {% for tag in tags %}
+        <li><a href="\view_tags_personal?id={{ tag[0] }}">{{tag[1]}}</a></li>
+    {% endfor %}
+    </ul>
+{% endif %}
+    </body>
+<a href='/'>Home</a>

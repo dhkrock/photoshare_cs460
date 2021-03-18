@@ -1,0 +1,28 @@
+<head>
+    <title>Comment search</title>
+</head>
+    <body>
+    {% with messages = get_flashed_messages() %}
+         {% if messages %}
+               {% for message in messages %}
+                   <p><h1 style = "font-size:3vw">{{ message }}</h1></p>
+               {% endfor %}
+         {% endif %}
+    {% endwith %}
+            <div class="title">
+            <h1>Comment search</h1>
+        </div>
+            <form method="post" enctype="multipart/form-data" action="/search_comment">
+                <label for="search">Search a comment:</label>
+                <input type ="text" name = "search"/><input type="submit" value = "Submit"/><br />
+            </form>
+    <h2>List of matching users</h2>
+    {% if users %}
+    <ul>
+    {% for user in users %}
+        <li>{{user[0]}}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    </body>
+<a href='/'>Home</a>

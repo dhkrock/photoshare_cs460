@@ -1,0 +1,21 @@
+<head>
+    <title>Tag search</title>
+</head>
+    <body>
+            <div class="title">
+            <h1>Photo search via tag(s)</h1>
+        </div>
+            <form method="post" enctype="multipart/form-data" action="/search_tags">
+                <label for="search">Search via tag:</label>
+                <input type ="text" name = "search"/><input type="submit" value = "Submit"/><br />
+            </form>
+    <h2>List of photos matching entered tags</h2>
+    {% if photos %}
+    <ul>
+    {% for photo in photos %}
+        <li>{{photo[1]}}<br> <img src='data:image/jpg;base64, {{ base64.b64encode(photo[0]).decode("ascii") }}'/></li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    </body>
+<a href='/'>Home</a>

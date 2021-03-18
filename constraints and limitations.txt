@@ -1,0 +1,4 @@
+- must be signed in to use functionalities besides viewing photos, albums, and commenting
+- assumes comment exists when searching
+- assume that user doesn't type in the same tag twice when entering tags for a photo
+- assume tags are searched correctly with no typos

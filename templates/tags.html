@@ -1,0 +1,17 @@
+<head>
+    <title>Add tags</title>
+</head>
+    <body>
+    {% with messages = get_flashed_messages() %}
+         {% if messages %}
+               {% for message in messages %}
+                   <p><h1 style = "font-size:3vw">{{ message }}</h1></p>
+               {% endfor %}
+         {% endif %}
+    {% endwith %}
+    <form method="post" enctype="multipart/form-data" action="/tags">
+        <label for="tags">Click submit after every tag you wish to give:</label>
+        <input type ="text" name = "tags"/><input type="submit" value = "Submit"/><br />
+    </form>
+    </body>
+<a href='/'>Home</a>

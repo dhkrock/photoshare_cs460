@@ -1,0 +1,16 @@
+<head>
+    <title>Your photos</title>
+</head>
+    <body>
+    <div class="title">
+            <h1>Click on a photo if you want to give it tags!</h1>
+        </div>
+    {% if photos %}
+    <ul>
+    {% for photo in photos %}
+        <li><a href="\tags?id={{ photo[1] }}"><img src='data:image/jpg;base64, {{ base64.b64encode(photo[0]).decode("ascii") }}'/></a></li>
+    {% endfor %}
+    </ul>
+{% endif %}
+    </body>
+<a href='/'>Home</a>
