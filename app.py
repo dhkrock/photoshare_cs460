@@ -16,6 +16,8 @@ import flask_login
 
 #for image uploading
 import os, base64
+import time
+from datetime import date
 
 mysql = MySQL()
 app = Flask(__name__)
@@ -152,7 +154,7 @@ def getUsersPhotos(uid):
 
 def getUserIdFromEmail(email):
 	cursor = conn.cursor()
-	cursor.execute("SELECT user_id  FROM Users WHERE email = '{0}'".format(email))
+	print(cursor.execute("SELECT user_id  FROM Users WHERE email = '{0}'".format(email)))
 	return cursor.fetchone()[0]
 
 def isEmailUnique(email):
@@ -182,6 +184,13 @@ def friendExists(friend_email):
 		return True
 	else:
 		False
+
+def commenterCheck(uid, pid):
+	cursor = conn.cursor()
+	if cursor.execute("SELECT user_id FROM Photos WHERE user_id = '{0}' AND photo_id = '{1}'".format(uid, pid)):
+		return True
+	else:
+		return False
 #end login code
 
 @app.route('/profile')
@@ -269,9 +278,27 @@ def upload_file():
 @app.route('/view_photos', methods = ['GET', 'POST'])
 def view_photos():
 	cursor = conn.cursor()
-	photos_v = 	cursor.execute("SELECT imgdata, photo_id, caption FROM Photos")
+	photos_v = cursor.execute("SELECT imgdata, photo_id, caption FROM Photos")
 	photos_v = cursor.fetchall()
 	return render_template('view_photos.html', photos=photos_v, base64=base64)
+
+@app.route('/view_comments', methods = ['GET','POST'])
+def view_comments():
+	pid = request.values.get("id")
+	comment = request.args.get('comment')
+	today = date.today()
+	current_date = today.strftime("%m/%d/%Y")
+	cursor = conn.cursor()
+	if(flask_login.current_user == 'AnonymousUserMixin'):
+		cursor.execute('''INSERT INTO Comments(photo_id, text, date) VALUES (%s,%s,%s,%s)''', (pid, comment, current_date))
+		conn.commit()
+	else:
+		uid = getUserIdFromEmail(flask_login.current_user.id)
+		if(commenterCheck(uid, pid)):
+			flash("You can't comment on your own photo!")
+		else:
+			cursor.execute('''INSERT INTO Comments(user_id, email, photo_id, text, date) VALUES (%s,%s,%s,%s,%s)''', (uid, flask_login.curent_user.id, pid, comment, current_date))
+			conn.commit()
 
 @app.route('/view_albums', methods = ['GET','POST'])
 def view_albums():

@@ -14,7 +14,7 @@
   {% if addComment %}
   {% if photoID %}
   <form action="/leaveComments/{{photoID}}" method="post">
-    <label for="comment">Add a comment</label>
+    <label for="comment">Add a comment:</label>
     <input type="text" name="comment" /><br />
     <input type="submit">
   </form>
@@ -22,7 +22,7 @@
   {% endif %}
 
   {% if comments %}
-  <h4>Here are the comments of this photo</h4>
+  <h4>Photo's comments</h4>
   <ul>
     {% for comment in comments %}
     <li>

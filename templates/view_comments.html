@@ -1,0 +1,28 @@
+<head>
+    <title>Photos</title>
+</head>
+    <body>
+    <div class="title">
+            <h1>Photo's comments</h1>
+        </div>
+    {% if photos %}
+    <ul>
+    {% for photo in photos %}
+        <li>{{photo[2]}}<br>
+        <img src='data:image/jpg;base64, {{ base64.b64encode(photo[0]).decode("ascii") }}'/></li>
+    {% endfor %}
+    </ul>
+    {%  if comments %}
+    <u1>
+    {% for comment in comments %}
+    <li>
+        Commenter: {{ comment }}
+    </li>
+    </u1>
+        <form method="post" enctype="multipart/form-data" action="/friends">
+            <label for="friend_email">Add a friend via email:</label>
+            <input type ="email" name = "friend_email"/><input type="submit" value = "Add"/><br />
+        </form>
+{% endif %}
+    </body>
+<a href='/'>Home</a>

@@ -63,8 +63,9 @@ CREATE TABLE Tagged(
 );
 
 CREATE TABLE Comments(
- comment_id INTEGER,
- user_id INTEGER NOT NULL,
+ comment_id INTEGER AUTO_INCREMENT NOT NULL,
+ user_id INTEGER,
+ email VARCHAR(100),
  photo_id INTEGER NOT NULL,
  text VARCHAR (100),
  date DATE,
@@ -72,7 +73,9 @@ CREATE TABLE Comments(
  FOREIGN KEY (user_id)
  REFERENCES Users (user_id),
  FOREIGN KEY (photo_id)
- REFERENCES Photos (photo_id)
+ REFERENCES Photos (photo_id),
+ FOREIGN KEY (email)
+ REFERENCES Users (email)
 );
 
 CREATE TABLE Likes(

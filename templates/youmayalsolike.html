@@ -1,0 +1,33 @@
+<head>
+  <title>You may also like</title>
+</head>
+
+<body>
+  {% if tags %}
+    <h2>Your top 5 tags</h2>
+    <ul>
+      {% for tag in tags%}
+        <li>{{tag}}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <h2>You may also like these photos.</h2>
+
+  {% if photos %}
+    <ul>
+    {% for photo in photos %}
+      <li>
+        <img src='data:image/png;base64, {{photo[1]}}' width="40%"/><br />
+        <h4>Caption: {{photo[2]}}</h4>
+        <a href="/tags/{{photo[0]}}">Check out the tags of this photo!</a><br />
+      </li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+
+  <p>
+    <a href='/'>Home</a>
+  </p>
+
+</body>

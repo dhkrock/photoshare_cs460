@@ -3,13 +3,13 @@
 </head>
     <body>
     <div class="title">
-            <h1>View the photos of all of the users here!</h1>
+            <h1>View the photos of all of the users here and click on a photo to view/add comments!</h1>
         </div>
     {% if photos %}
     <ul>
     {% for photo in photos %}
         <li>{{photo[2]}}<br>
-        <img src='data:image/jpg;base64, {{ base64.b64encode(photo[0]).decode("ascii") }}'/></li>
+        <a href="\view_comments?id={{ photo[1] }}"><img src='data:image/jpg;base64, {{ base64.b64encode(photo[0]).decode("ascii") }}'/></a></li>
     {% endfor %}
     </ul>
 {% endif %}
