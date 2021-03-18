@@ -639,13 +639,8 @@ def youmayalsolike():
     l = tuple(pids)
     print(l)
     params = {'l': l}
-    photos = ()
-    print(pids)
-    for x in pids:
-        ph = cursor.execute("SELECT imgdata, photo_id FROM Photos WHERE photo_id = '{0}'".format(x))
-        ph = cursor.fetchall()
-        photos += (ph,)
-    print(photos)
+    photos = cursor.execute("SELECT imgdata, photo_id FROM Photos WHERE photo_id IN %(l)s",params)
+    photos = cursor.fetchall()
     return render_template('youmayalsolike.html', photos=photos, base64=base64)
 
 # default page
